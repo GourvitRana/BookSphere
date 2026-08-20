@@ -1,0 +1,172 @@
+/* ==========================================================================
+   BookSphere — authentication & dashboard placeholder styles
+   Small add-on over style.css (reuses the design tokens / form fields).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Auth pages (login / register)
+   -------------------------------------------------------------------------- */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+.auth-card {
+  width: min(400px, 100%);
+  padding: 36px 32px 30px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+}
+
+.auth-card--wide { width: min(440px, 100%); }
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.auth-brand .brand-name {
+  font-size: 24px;
+}
+
+.auth-heading {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.auth-heading h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.auth-heading p {
+  color: var(--text-dim);
+  font-size: 14.5px;
+}
+
+.auth-banner {
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--success);
+  background: rgba(111, 208, 162, 0.1);
+  border: 1px solid rgba(111, 208, 162, 0.28);
+  margin-bottom: 18px;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 6px;
+  padding: 13px 20px;
+}
+
+.auth-switch {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.auth-switch a {
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.auth-switch a:hover { text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   Role badge + user chip (dashboards)
+   -------------------------------------------------------------------------- */
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.user-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.role-badge--librarian {
+  color: var(--accent-strong);
+  background: rgba(240, 182, 83, 0.14);
+  border: 1px solid rgba(240, 182, 83, 0.35);
+}
+
+.role-badge--customer {
+  color: var(--teal);
+  background: rgba(111, 208, 194, 0.14);
+  border: 1px solid rgba(111, 208, 194, 0.35);
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard placeholder panel
+   -------------------------------------------------------------------------- */
+.placeholder-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  margin: 80px auto 0;
+  padding: 64px 32px;
+  max-width: 560px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--surface), transparent 70%);
+  border: 1px dashed var(--border-strong);
+}
+
+.placeholder-panel .eyebrow {
+  margin-bottom: 0;
+}
+
+.placeholder-panel h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.placeholder-art svg {
+  width: 130px;
+  height: auto;
+  margin-bottom: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .auth-card { padding: 28px 22px 24px; }
+  .user-chip { padding: 5px 8px; }
+  .user-name { max-width: 110px; }
+}

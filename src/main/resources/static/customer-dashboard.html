@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Customer dashboard - BookSphere.">
+  <title>Customer Dashboard &middot; BookSphere</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body data-page="dashboard" data-role="CUSTOMER">
+
+  <div class="app-bg" aria-hidden="true">
+    <div class="orb orb--amber"></div>
+    <div class="orb orb--teal"></div>
+    <div class="grid-haze"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="#" aria-label="BookSphere home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M6 8.5C6 6.57 7.57 5 9.5 5H16v20H9.5A3.5 3.5 0 0 1 6 21.5v-13Z" fill="url(#g-brand)"/>
+            <path d="M26 8.5C26 6.57 24.43 5 22.5 5H16v20h6.5a3.5 3.5 0 0 0 3.5-3.5v-13Z" fill="url(#g-brand2)"/>
+            <rect x="15.1" y="25" width="1.8" height="3" rx="0.9" fill="url(#g-brand2)"/>
+            <defs>
+              <linearGradient id="g-brand" x1="6" y1="5" x2="16" y2="25" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F5C56B"/><stop offset="1" stop-color="#E8964B"/>
+              </linearGradient>
+              <linearGradient id="g-brand2" x1="16" y1="5" x2="26" y2="25" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#8FD8C9"/><stop offset="1" stop-color="#5BB6A8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">BookSphere</span>
+          <span class="brand-tagline">Your digital library, organized.</span>
+        </span>
+      </a>
+
+      <nav class="header-actions" aria-label="User actions">
+        <span class="user-chip">
+          <span class="user-name" id="userName">…</span>
+          <span class="role-badge role-badge--customer" id="userRole">CUSTOMER</span>
+        </span>
+        <button type="button" class="btn btn-ghost" id="logoutBtn">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          <span>Logout</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="placeholder-panel animate-in">
+      <div class="placeholder-art" aria-hidden="true">
+        <svg viewBox="0 0 120 96">
+          <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
+          <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
+          <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
+          <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <p class="eyebrow">Customer Area</p>
+      <h1>Welcome, <span id="userGreeting">Customer</span></h1>
+      <p class="state-note">
+        Your personal dashboard is on its way. Browsing and borrowing features will be
+        implemented in the next stage.
+      </p>
+    </section>
+  </main>
+
+  <script src="js/auth.js" defer></script>
+</body>
+</html>

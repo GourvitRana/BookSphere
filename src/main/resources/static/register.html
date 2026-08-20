@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your BookSphere account.">
+  <title>Create account &middot; BookSphere</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body data-page="register">
+
+  <div class="app-bg" aria-hidden="true">
+    <div class="orb orb--amber"></div>
+    <div class="orb orb--violet"></div>
+    <div class="grid-haze"></div>
+  </div>
+
+  <main class="auth-page">
+    <div class="auth-card auth-card--wide animate-in">
+
+      <a class="auth-brand" href="#" aria-label="BookSphere home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M6 8.5C6 6.57 7.57 5 9.5 5H16v20H9.5A3.5 3.5 0 0 1 6 21.5v-13Z" fill="url(#g-brand)"/>
+            <path d="M26 8.5C26 6.57 24.43 5 22.5 5H16v20h6.5a3.5 3.5 0 0 0 3.5-3.5v-13Z" fill="url(#g-brand2)"/>
+            <rect x="15.1" y="25" width="1.8" height="3" rx="0.9" fill="url(#g-brand2)"/>
+            <defs>
+              <linearGradient id="g-brand" x1="6" y1="5" x2="16" y2="25" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F5C56B"/><stop offset="1" stop-color="#E8964B"/>
+              </linearGradient>
+              <linearGradient id="g-brand2" x1="16" y1="5" x2="26" y2="25" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#8FD8C9"/><stop offset="1" stop-color="#5BB6A8"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">BookSphere</span>
+          <span class="brand-tagline">Your digital library, organized.</span>
+        </span>
+      </a>
+
+      <div class="auth-heading">
+        <h1>Create your account</h1>
+        <p>Join BookSphere as a customer.</p>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <div class="field">
+          <label for="regName">Name</label>
+          <input type="text" id="regName" name="name" required maxlength="255" autocomplete="name" placeholder="Your full name">
+        </div>
+
+        <div class="field">
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" name="email" required maxlength="255" autocomplete="email" placeholder="you@example.com">
+        </div>
+
+        <div class="field">
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" name="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
+        </div>
+
+        <div class="field">
+          <label for="regConfirm">Confirm password</label>
+          <input type="password" id="regConfirm" name="confirmPassword" required minlength="6" autocomplete="new-password" placeholder="Repeat your password">
+        </div>
+
+        <p class="form-error" id="registerError" role="alert" hidden></p>
+
+        <button type="submit" class="btn btn-primary btn-block" id="registerSubmit">
+          <span class="btn-label">Create account</span>
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        Already have an account? <a href="login.html">Sign in</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="js/auth.js" defer></script>
+</body>
+</html>

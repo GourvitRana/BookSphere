@@ -387,6 +387,189 @@
   border-top: 1px dashed var(--border);
 }
 
+.modal-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.borrow-confirm-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.borrow-confirm-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.borrow-confirm-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.coming-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-faint);
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+}
+
+.coming-pill svg { width: 14px; height: 14px; }
+
+/* --------------------------------------------------------------------------
+   10. Customer Borrowings Section
+   -------------------------------------------------------------------------- */
+.cust-borrowings {
+  padding-bottom: 32px;
+}
+
+.cust-borrowings-header {
+  margin-bottom: 20px;
+}
+
+.section-subtitle {
+  color: var(--text-dim);
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.borrowings-table {
+  overflow-x: auto;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.borrowings-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.borrowings-table th,
+.borrowings-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.borrowings-table th {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.borrowings-table tbody tr {
+  transition: background 0.15s var(--ease);
+}
+
+.borrowings-table tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+.borrow-book-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.borrow-book-title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.borrow-book-id {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.borrow-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-active {
+  color: var(--teal);
+  background: rgba(111, 208, 194, 0.12);
+  border: 1px solid rgba(111, 208, 194, 0.3);
+}
+
+.status-returned {
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.status-overdue {
+  color: var(--danger-strong);
+  background: rgba(239, 109, 109, 0.1);
+  border: 1px solid rgba(239, 109, 109, 0.3);
+}
+
+.status-text {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-row {
+  height: 56px;
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.stat-grid--3 { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 1100px) {
+  .stat-grid--3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .stat-grid--3 { grid-template-columns: 1fr; }
+  .borrowings-table th:nth-child(3),
+  .borrowings-table td:nth-child(3),
+  .borrowings-table th:nth-child(4),
+  .borrowings-table td:nth-child(4) {
+    display: none;
+  }
+}
+
 /* --------------------------------------------------------------------------
    9. Responsive
    -------------------------------------------------------------------------- */

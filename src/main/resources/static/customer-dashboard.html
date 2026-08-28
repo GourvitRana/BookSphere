@@ -45,7 +45,7 @@
       <nav class="cust-nav" aria-label="Primary">
         <a href="#top" class="active" data-scroll="top">Home</a>
         <a href="#browse" data-scroll="browse">Browse Books</a>
-        <span class="is-disabled">My Borrowings <span class="soon-tag">Next stage</span></span>
+        <a href="#my-borrowings" data-scroll="my-borrowings">My Borrowings</a>
         <span class="is-disabled">Profile <span class="soon-tag">Next stage</span></span>
       </nav>
 
@@ -73,7 +73,7 @@
 
     <!-- Stats -->
     <section class="cust-stats" aria-label="Library statistics">
-      <div class="stat-grid stat-grid--2">
+      <div class="stat-grid stat-grid--3">
         <article class="stat-card stat-card--books">
           <span class="stat-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
@@ -91,6 +91,16 @@
           <div class="stat-body">
             <span class="stat-label">Total Books</span>
             <span class="stat-value" id="statBooks">0</span>
+          </div>
+        </article>
+
+        <article class="stat-card stat-card--copies">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3Z"/><path d="M4 12l8 4.5 8-4.5"/><path d="M4 16.5l8 4.5 8-4.5"/></svg>
+          </span>
+          <div class="stat-body">
+            <span class="stat-label">My Active Borrowings</span>
+            <span class="stat-value" id="statActiveBorrowings">0</span>
           </div>
         </article>
       </div>
@@ -147,7 +157,118 @@
         <p class="state-note">The library is being curated. Check back soon for new titles.</p>
       </div>
     </section>
+
+    <!-- My Borrowings -->
+    <section id="my-borrowings" class="cust-borrowings" aria-labelledby="borrowingsTitle">
+      <div class="cust-borrowings-header">
+        <h2 class="section-title" id="borrowingsTitle">My Borrowings</h2>
+        <p class="section-subtitle">Keep track of the books you&rsquo;re currently reading.</p>
+      </div>
+
+      <div class="state-panel" id="borrowingsLoading" role="status" aria-label="Loading borrowings">
+        <div class="skeleton-list" aria-hidden="true">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+        <p class="state-note">Loading your borrowings&hellip;</p>
+      </div>
+
+      <div class="state-panel state-panel--center" id="borrowingsError" role="alert" hidden>
+        <div class="state-glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L2.4 17.3A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.7L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        </div>
+        <h3>Couldn't load your borrowings</h3>
+        <p class="state-note" id="borrowingsErrorMsg">Please try again.</p>
+        <button type="button" class="btn btn-ghost" id="borrowingsRetry">Try again</button>
+      </div>
+
+      <div class="state-panel state-panel--center" id="borrowingsEmpty" hidden>
+        <div class="empty-art" aria-hidden="true">
+          <svg viewBox="0 0 120 96">
+            <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
+            <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
+            <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
+            <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
+            <rect x="50" y="14" width="18" height="4" rx="2" fill="rgba(255,255,255,.5)"/>
+            <rect x="50" y="24" width="14" height="3" rx="1.5" fill="rgba(255,255,255,.32)"/>
+            <rect x="50" y="31" width="16" height="3" rx="1.5" fill="rgba(255,255,255,.24)"/>
+          </svg>
+        </div>
+        <h3>No borrowings yet</h3>
+        <p class="state-note">Explore the collection and find your next book.</p>
+        <a href="#browse" class="btn btn-primary" data-scroll="browse">Browse Books</a>
+      </div>
+
+      <div class="borrowings-table" id="borrowingsTable" hidden>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th>Author</th>
+                <th>Borrowed</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="borrowingsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- ======================= Borrow Confirm Modal ======================= -->
+  <div class="modal" id="borrowConfirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="borrowConfirmTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel modal-panel--sm">
+      <div class="modal-header">
+        <h2 id="borrowConfirmTitle">Borrow this book?</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="borrow-confirm-content">
+          <p class="borrow-confirm-label">Book</p>
+          <p class="borrow-confirm-value" id="borrowConfirmTitleText"></p>
+          <p class="borrow-confirm-label">Author</p>
+          <p class="borrow-confirm-value" id="borrowConfirmAuthorText"></p>
+          <p class="borrow-confirm-label">Available copies</p>
+          <p class="borrow-confirm-value" id="borrowConfirmQuantityText"></p>
+          <p class="borrow-confirm-label">Borrowing period</p>
+          <p class="borrow-confirm-value">14 days</p>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="borrowConfirmBtn">
+            <span class="btn-label">Confirm Borrow</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= Return Confirm Modal ======================= -->
+  <div class="modal" id="returnConfirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="returnConfirmTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel modal-panel--sm">
+      <div class="modal-header">
+        <h2 id="returnConfirmTitle">Return Book</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to return this book?</p>
+        <p class="state-note" id="returnConfirmBookTitle"></p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+          <button type="button" class="btn btn-danger" id="returnConfirmBtn">
+            <span class="btn-label">Return Book</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ======================= Details modal ======================= -->
   <div class="modal" id="detailsModal" hidden role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
@@ -158,6 +279,7 @@
         <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
       </div>
       <div id="detailsContent"></div>
+      <div class="modal-footer" id="detailsFooter"></div>
     </div>
   </div>
 

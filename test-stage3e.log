@@ -1,0 +1,64 @@
+$2a$10$CFk8Wge1qRSHA8/M5EfC5e56h8M6zEuhZoMUh1vTGCWWHs3prpz9m
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.0)
+
+2026-08-28T15:49:06.006+05:30  INFO 13256 --- [librarymanagementsystem] [           main] l.LibrarymanagementsystemApplication     : Starting LibrarymanagementsystemApplication v0.0.1-SNAPSHOT using Java 22.0.1 with PID 13256 (D:\Springboot\librarymanagementsystem\target\librarymanagementsystem-0.0.1-SNAPSHOT.jar started by gourv in D:\Springboot\librarymanagementsystem)
+2026-08-28T15:49:06.013+05:30  INFO 13256 --- [librarymanagementsystem] [           main] l.LibrarymanagementsystemApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-08-28T15:49:07.383+05:30  INFO 13256 --- [librarymanagementsystem] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-28T15:49:07.512+05:30  INFO 13256 --- [librarymanagementsystem] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 109 ms. Found 3 JPA repository interfaces.
+2026-08-28T15:49:08.727+05:30  INFO 13256 --- [librarymanagementsystem] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-08-28T15:49:08.762+05:30  INFO 13256 --- [librarymanagementsystem] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-08-28T15:49:08.764+05:30  INFO 13256 --- [librarymanagementsystem] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-28T15:49:08.825+05:30  INFO 13256 --- [librarymanagementsystem] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2689 ms
+2026-08-28T15:49:09.306+05:30  INFO 13256 --- [librarymanagementsystem] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-28T15:49:09.437+05:30  INFO 13256 --- [librarymanagementsystem] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-28T15:49:11.077+05:30  INFO 13256 --- [librarymanagementsystem] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-28T15:49:11.125+05:30  INFO 13256 --- [librarymanagementsystem] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-08-28T15:49:11.668+05:30  INFO 13256 --- [librarymanagementsystem] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68360fb9
+2026-08-28T15:49:11.673+05:30  INFO 13256 --- [librarymanagementsystem] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-08-28T15:49:11.776+05:30  WARN 13256 --- [librarymanagementsystem] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-28T15:49:11.820+05:30  INFO 13256 --- [librarymanagementsystem] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/library_db]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 9.7
+	Default catalog/schema: library_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-28T15:49:13.229+05:30  INFO 13256 --- [librarymanagementsystem] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-28T15:49:13.364+05:30  INFO 13256 --- [librarymanagementsystem] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-28T15:49:13.529+05:30  INFO 13256 --- [librarymanagementsystem] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-28T15:49:14.260+05:30  WARN 13256 --- [librarymanagementsystem] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-28T15:49:14.317+05:30  WARN 13256 --- [librarymanagementsystem] [           main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 214498f9-46f2-4717-a1f7-325431b40036
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-08-28T15:49:14.336+05:30  INFO 13256 --- [librarymanagementsystem] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-08-28T15:49:14.758+05:30  INFO 13256 --- [librarymanagementsystem] [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-08-28T15:49:15.404+05:30  INFO 13256 --- [librarymanagementsystem] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-08-28T15:49:15.426+05:30  INFO 13256 --- [librarymanagementsystem] [           main] l.LibrarymanagementsystemApplication     : Started LibrarymanagementsystemApplication in 10.753 seconds (process running for 12.549)
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+2026-08-28T15:50:38.477+05:30  INFO 13256 --- [librarymanagementsystem] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-28T15:50:38.482+05:30  INFO 13256 --- [librarymanagementsystem] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-28T15:50:38.496+05:30  INFO 13256 --- [librarymanagementsystem] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms

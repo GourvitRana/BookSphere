@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +30,31 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDTO> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
         return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(BookNotAvailableException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBookNotAvailable(BookNotAvailableException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(BorrowingNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBorrowingNotFound(BorrowingNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(BorrowingAlreadyReturnedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBorrowingAlreadyReturned(BorrowingAlreadyReturnedException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedBorrowingOperationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUnauthorizedBorrowing(UnauthorizedBorrowingOperationException ex) {
+        return build(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    public ResponseEntity<ErrorResponseDTO> handleAccessDenied(Exception ex) {
+        return build(HttpStatus.FORBIDDEN, "Access denied");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

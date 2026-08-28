@@ -6,72 +6,283 @@
   <meta name="description" content="Librarian dashboard - BookSphere.">
   <title>Librarian Dashboard &middot; BookSphere</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
-<body data-page="dashboard" data-role="LIBRARIAN">
+<body data-page="librarian">
 
   <div class="app-bg" aria-hidden="true">
     <div class="orb orb--amber"></div>
     <div class="orb orb--teal"></div>
+    <div class="orb orb--violet"></div>
     <div class="grid-haze"></div>
   </div>
 
-  <header class="site-header">
-    <div class="site-header-inner">
-      <a class="brand" href="#" aria-label="BookSphere home">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" fill="none">
-            <path d="M6 8.5C6 6.57 7.57 5 9.5 5H16v20H9.5A3.5 3.5 0 0 1 6 21.5v-13Z" fill="url(#g-brand)"/>
-            <path d="M26 8.5C26 6.57 24.43 5 22.5 5H16v20h6.5a3.5 3.5 0 0 0 3.5-3.5v-13Z" fill="url(#g-brand2)"/>
-            <rect x="15.1" y="25" width="1.8" height="3" rx="0.9" fill="url(#g-brand2)"/>
-            <defs>
-              <linearGradient id="g-brand" x1="6" y1="5" x2="16" y2="25" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#F5C56B"/><stop offset="1" stop-color="#E8964B"/>
-              </linearGradient>
-              <linearGradient id="g-brand2" x1="16" y1="5" x2="26" y2="25" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#8FD8C9"/><stop offset="1" stop-color="#5BB6A8"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </span>
-        <span class="brand-text">
-          <span class="brand-name">BookSphere</span>
-          <span class="brand-tagline">Your digital library, organized.</span>
-        </span>
-      </a>
+  <div class="dashboard-layout">
 
-      <nav class="header-actions" aria-label="User actions">
-        <span class="user-chip">
-          <span class="user-name" id="userName">…</span>
-          <span class="role-badge role-badge--librarian" id="userRole">LIBRARIAN</span>
+    <!-- ======================= Sidebar ======================= -->
+    <aside class="sidebar" id="sidebar" aria-label="Dashboard navigation">
+      <div class="sidebar-head">
+        <a class="brand" href="#" aria-label="BookSphere home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M6 8.5C6 6.57 7.57 5 9.5 5H16v20H9.5A3.5 3.5 0 0 1 6 21.5v-13Z" fill="url(#g-brand)"/>
+              <path d="M26 8.5C26 6.57 24.43 5 22.5 5H16v20h6.5a3.5 3.5 0 0 0 3.5-3.5v-13Z" fill="url(#g-brand2)"/>
+              <rect x="15.1" y="25" width="1.8" height="3" rx="0.9" fill="url(#g-brand2)"/>
+              <defs>
+                <linearGradient id="g-brand" x1="6" y1="5" x2="16" y2="25" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#F5C56B"/><stop offset="1" stop-color="#E8964B"/>
+                </linearGradient>
+                <linearGradient id="g-brand2" x1="16" y1="5" x2="26" y2="25" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#8FD8C9"/><stop offset="1" stop-color="#5BB6A8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </span>
+          <span class="brand-text">
+            <span class="brand-name">BookSphere</span>
+          </span>
+        </a>
+        <button type="button" class="icon-btn sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Primary">
+        <a class="sidebar-link active" href="#overview" data-scroll="overview">
+          <span>Dashboard</span>
+        </a>
+        <a class="sidebar-link" href="#collection" data-scroll="collection">
+          <span>Books</span>
+        </a>
+        <span class="sidebar-link is-disabled">
+          <span>Members</span><span class="soon-tag">Next stage</span>
         </span>
-        <button type="button" class="btn btn-ghost" id="logoutBtn">
+        <span class="sidebar-link is-disabled">
+          <span>Borrowing</span><span class="soon-tag">Next stage</span>
+        </span>
+      </nav>
+
+      <div class="sidebar-foot">
+        <button type="button" class="btn btn-ghost sidebar-logout" id="logoutBtn">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
           <span>Logout</span>
         </button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="page">
-    <section class="placeholder-panel animate-in">
-      <div class="placeholder-art" aria-hidden="true">
-        <svg viewBox="0 0 120 96">
-          <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
-          <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
-          <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
-          <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
-        </svg>
       </div>
-      <p class="eyebrow">Librarian Area</p>
-      <h1>Welcome, <span id="userGreeting">Librarian</span></h1>
-      <p class="state-note">
-        Your librarian dashboard is on its way. The full dashboard with book management
-        tools will be implemented in the next stage.
-      </p>
-    </section>
-  </main>
+    </aside>
 
-  <script src="js/auth.js" defer></script>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- ======================= Main ======================= -->
+    <main class="dash-main">
+
+      <header class="dash-header">
+        <button type="button" class="menu-toggle" id="menuToggle" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="dash-title">
+          <h1 id="greeting">Good day, Librarian</h1>
+          <p id="todayDate"></p>
+        </div>
+        <div class="dash-header-right">
+          <span class="user-chip">
+            <span class="user-name" id="userName">…</span>
+            <span class="role-badge role-badge--librarian" id="userRole">LIBRARIAN</span>
+          </span>
+        </div>
+      </header>
+
+      <!-- Overview -->
+      <section id="overview" class="dash-section" aria-labelledby="overviewTitle">
+        <h2 class="section-title" id="overviewTitle">Library Overview</h2>
+        <div class="stat-grid stat-grid--4">
+          <article class="stat-card stat-card--books">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Total Books</span>
+              <span class="stat-value" id="statBooks">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--copies">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3Z"/><path d="M4 12l8 4.5 8-4.5"/><path d="M4 16.5l8 4.5 8-4.5"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Total Copies</span>
+              <span class="stat-value" id="statCopies">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--categories">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 5l9-2 9 2v14l-9 2-9-2V5Z"/><path d="M3 5l9 2 9-2M12 7v14"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Categories</span>
+              <span class="stat-value" id="statCategories">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--copies">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/><path d="M12 8v4l3 2"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Available Copies</span>
+              <span class="stat-value" id="statAvailable">0</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Book collection -->
+      <section id="collection" class="dash-section" aria-labelledby="collectionTitle">
+        <div class="collection-toolbar">
+          <h2 class="section-title" id="collectionTitle">Book Collection</h2>
+          <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <label class="sr-only" for="searchInput">Search books by title, author, or category</label>
+            <input type="search" id="searchInput" class="search-input"
+                   placeholder="Search by title, author, or category&hellip;" autocomplete="off">
+            <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" hidden>&times;</button>
+          </div>
+          <button type="button" class="btn btn-primary" id="addBookBtn">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>Add Book</span>
+          </button>
+          <span class="result-count" id="resultCount" aria-live="polite"></span>
+        </div>
+
+        <div class="books-grid" id="booksGrid" aria-live="polite"></div>
+
+        <div class="state-panel" id="loadingState" role="status" aria-label="Loading books">
+          <div class="skeleton-grid" aria-hidden="true">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+          <p class="state-note">Loading your collection&hellip;</p>
+        </div>
+
+        <div class="state-panel state-panel--center" id="errorState" role="alert" hidden>
+          <div class="state-glyph" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L2.4 17.3A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.7L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          </div>
+          <h3>Couldn't reach the library</h3>
+          <p class="state-note">The server may be offline. Check that the backend is running, then try again.</p>
+          <button type="button" class="btn btn-ghost" id="retryBtn">Try again</button>
+        </div>
+
+        <div class="state-panel state-panel--center" id="emptyState" hidden>
+          <div class="empty-art" aria-hidden="true">
+            <svg viewBox="0 0 120 96">
+              <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
+              <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
+              <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
+              <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
+              <rect x="50" y="14" width="18" height="4" rx="2" fill="rgba(255,255,255,.5)"/>
+              <rect x="50" y="24" width="14" height="3" rx="1.5" fill="rgba(255,255,255,.32)"/>
+              <rect x="50" y="31" width="16" height="3" rx="1.5" fill="rgba(255,255,255,.24)"/>
+            </svg>
+          </div>
+          <h3>No books in the library yet</h3>
+          <p class="state-note">Add your first title and start building the collection.</p>
+          <button type="button" class="btn btn-primary" id="emptyAddBtn">Add your first book</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ======================= Add / Edit modal ======================= -->
+  <div class="modal" id="bookModal" hidden role="dialog" aria-modal="true" aria-labelledby="bookModalTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 id="bookModalTitle">Add Book</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="bookForm" novalidate>
+        <div class="field">
+          <label for="fieldTitle">Title</label>
+          <input type="text" id="fieldTitle" name="title" required maxlength="255" placeholder="e.g. The Midnight Library">
+        </div>
+
+        <div class="field">
+          <label for="fieldAuthor">Author</label>
+          <input type="text" id="fieldAuthor" name="author" required maxlength="255" placeholder="e.g. Matt Haig">
+        </div>
+
+        <div class="field">
+          <label for="fieldCategory">Category</label>
+          <input type="text" id="fieldCategory" name="category" required maxlength="255" placeholder="e.g. Fiction">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="fieldPrice">Price</label>
+            <div class="input-affix">
+              <span class="affix" aria-hidden="true">$</span>
+              <input type="number" id="fieldPrice" name="price" required min="1" step="0.01" placeholder="0.00">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="fieldQuantity">Quantity</label>
+            <input type="number" id="fieldQuantity" name="quantity" required min="0" step="1" placeholder="0">
+          </div>
+        </div>
+
+        <p class="form-error" id="formError" role="alert" hidden></p>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+          <button type="submit" class="btn btn-primary" id="bookFormSubmit">
+            <span class="btn-label">Save Book</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================= Details modal ======================= -->
+  <div class="modal" id="detailsModal" hidden role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel modal-panel--details">
+      <div class="modal-header">
+        <h2 id="detailsTitle">Book Details</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
+      </div>
+      <div id="detailsContent"></div>
+    </div>
+  </div>
+
+  <!-- ======================= Delete confirmation modal ======================= -->
+  <div class="modal" id="deleteModal" hidden role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel modal-panel--sm">
+      <div class="modal-header">
+        <h2 id="deleteTitle">Remove book?</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="deleteMessage">This will permanently remove the book.</p>
+        <p class="state-note">This action cannot be undone.</p>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete book</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast region -->
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/shared.js" defer></script>
+  <script src="js/librarian.js" defer></script>
 </body>
 </html>

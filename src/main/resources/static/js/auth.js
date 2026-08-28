@@ -1,44 +1,11 @@
 /* ==========================================================================
-   BookSphere — authentication controller
-   Handles login, registration, session checks and logout for the auth pages
-   and the role dashboard placeholders. Talks to /auth/** endpoints.
+   BookSphere — login & registration page controller
+   Requires js/shared.js to be loaded first (authRequest, getMe, roleDashboard).
    ========================================================================== */
 
 'use strict';
 
 const page = document.body.dataset.page;
-const expectedRole = document.body.dataset.role || null;
-
-/* --------------------------------------------------------------------------
-   Helpers
-   -------------------------------------------------------------------------- */
-async function authRequest(path, options = {}) {
-  let response;
-  try {
-    response = await fetch(path, {
-      headers: { 'Content-Type': 'application/json' },
-      ...options,
-    });
-  } catch (err) {
-    throw new Error('network');
-  }
-
-  if (!response.ok) {
-    let message = `Request failed with status ${response.status}`;
-    try {
-      const data = await response.json();
-      if (data && typeof data.message === 'string' && data.message.length > 0) message = data.message;
-    } catch (_) { /* keep the status-based message */ }
-    throw new Error(message);
-  }
-
-  const text = await response.text();
-  return text ? JSON.parse(text) : null;
-}
-
-function roleDashboard(role) {
-  return role === 'LIBRARIAN' ? 'librarian-dashboard.html' : 'customer-dashboard.html';
-}
 
 function showError(id, message) {
   const el = document.getElementById(id);
@@ -57,28 +24,6 @@ function setSubmitting(btn, busy, label) {
   const labelEl = btn.querySelector('.btn-label');
   btn.disabled = busy;
   if (labelEl) labelEl.textContent = busy ? label : '';
-}
-
-/* --------------------------------------------------------------------------
-   Session helpers
-   -------------------------------------------------------------------------- */
-async function getMe() {
-  try {
-    const data = await authRequest('/auth/me');
-    return data && data.email ? data : null;
-  } catch (err) {
-    return null;
-  }
-}
-
-/* Redirects to the login page when there is no active session. */
-async function requireAuth() {
-  const me = await getMe();
-  if (!me) {
-    location.href = 'login.html';
-    return null;
-  }
-  return me;
 }
 
 /* --------------------------------------------------------------------------
@@ -177,44 +122,9 @@ function wireRegister() {
 }
 
 /* --------------------------------------------------------------------------
-   Dashboard placeholders
-   -------------------------------------------------------------------------- */
-function wireDashboard(user) {
-  const nameEl = document.getElementById('userName');
-  const greetingEl = document.getElementById('userGreeting');
-  const roleEl = document.getElementById('userRole');
-
-  if (nameEl) nameEl.textContent = user.name;
-  if (greetingEl) greetingEl.textContent = user.name.split(' ')[0] || user.name;
-  if (roleEl) roleEl.textContent = user.role;
-
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      setSubmitting(logoutBtn, true, 'Signing out…');
-      try {
-        await authRequest('/auth/logout', { method: 'POST' });
-      } catch (_) { /* session may already be gone */ }
-      location.href = 'login.html';
-    });
-  }
-}
-
-/* --------------------------------------------------------------------------
    Entry point
    -------------------------------------------------------------------------- */
 async function main() {
-  if (page === 'dashboard') {
-    const me = await requireAuth();
-    if (!me) return;
-    if (expectedRole && me.role !== expectedRole) {
-      location.href = roleDashboard(me.role);
-      return;
-    }
-    wireDashboard(me);
-    return;
-  }
-
   if (page === 'login' || page === 'register') {
     const me = await getMe();
     if (me) {

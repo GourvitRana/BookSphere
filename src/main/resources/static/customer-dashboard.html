@@ -6,17 +6,19 @@
   <meta name="description" content="Customer dashboard - BookSphere.">
   <title>Customer Dashboard &middot; BookSphere</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/dashboard.css">
 </head>
-<body data-page="dashboard" data-role="CUSTOMER">
+<body data-page="customer">
 
   <div class="app-bg" aria-hidden="true">
     <div class="orb orb--amber"></div>
     <div class="orb orb--teal"></div>
+    <div class="orb orb--violet"></div>
     <div class="grid-haze"></div>
   </div>
 
-  <header class="site-header">
+  <!-- ======================= Header ======================= -->
+  <header class="site-header cust-header">
     <div class="site-header-inner">
       <a class="brand" href="#" aria-label="BookSphere home">
         <span class="brand-mark" aria-hidden="true">
@@ -40,6 +42,13 @@
         </span>
       </a>
 
+      <nav class="cust-nav" aria-label="Primary">
+        <a href="#top" class="active" data-scroll="top">Home</a>
+        <a href="#browse" data-scroll="browse">Browse Books</a>
+        <span class="is-disabled">My Borrowings <span class="soon-tag">Next stage</span></span>
+        <span class="is-disabled">Profile <span class="soon-tag">Next stage</span></span>
+      </nav>
+
       <nav class="header-actions" aria-label="User actions">
         <span class="user-chip">
           <span class="user-name" id="userName">…</span>
@@ -53,25 +62,109 @@
     </div>
   </header>
 
-  <main class="page">
-    <section class="placeholder-panel animate-in">
-      <div class="placeholder-art" aria-hidden="true">
-        <svg viewBox="0 0 120 96">
-          <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
-          <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
-          <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
-          <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
-        </svg>
-      </div>
+  <main class="page" id="top">
+
+    <!-- Hero -->
+    <section class="cust-hero animate-in">
       <p class="eyebrow">Customer Area</p>
-      <h1>Welcome, <span id="userGreeting">Customer</span></h1>
-      <p class="state-note">
-        Your personal dashboard is on its way. Browsing and borrowing features will be
-        implemented in the next stage.
-      </p>
+      <h1>Welcome back, <span class="hero-accent" id="customerName">Reader</span></h1>
+      <p>Discover something worth reading today.</p>
+    </section>
+
+    <!-- Stats -->
+    <section class="cust-stats" aria-label="Library statistics">
+      <div class="stat-grid stat-grid--2">
+        <article class="stat-card stat-card--books">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+          </span>
+          <div class="stat-body">
+            <span class="stat-label">Available Books</span>
+            <span class="stat-value" id="statAvailable">0</span>
+          </div>
+        </article>
+
+        <article class="stat-card stat-card--copies">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3Z"/><path d="M4 12l8 4.5 8-4.5"/><path d="M4 16.5l8 4.5 8-4.5"/></svg>
+          </span>
+          <div class="stat-body">
+            <span class="stat-label">Total Books</span>
+            <span class="stat-value" id="statBooks">0</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Browse -->
+    <section id="browse" class="cust-browse" aria-labelledby="browseTitle">
+      <div class="collection-toolbar">
+        <h2 class="section-title" id="browseTitle">Explore the Collection</h2>
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <label class="sr-only" for="searchInput">Search books by title, author, or category</label>
+          <input type="search" id="searchInput" class="search-input"
+                 placeholder="Search by title, author, or category&hellip;" autocomplete="off">
+          <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" hidden>&times;</button>
+        </div>
+        <span class="result-count" id="resultCount" aria-live="polite"></span>
+      </div>
+
+      <div class="books-grid books-grid--customer" id="booksGrid" aria-live="polite"></div>
+
+      <div class="state-panel" id="loadingState" role="status" aria-label="Loading books">
+        <div class="skeleton-grid" aria-hidden="true">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+        <p class="state-note">Opening the shelves&hellip;</p>
+      </div>
+
+      <div class="state-panel state-panel--center" id="errorState" role="alert" hidden>
+        <div class="state-glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L2.4 17.3A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.7L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        </div>
+        <h3>Couldn't reach the library</h3>
+        <p class="state-note">The server may be offline. Check that the backend is running, then try again.</p>
+        <button type="button" class="btn btn-ghost" id="retryBtn">Try again</button>
+      </div>
+
+      <div class="state-panel state-panel--center" id="emptyState" hidden>
+        <div class="empty-art" aria-hidden="true">
+          <svg viewBox="0 0 120 96">
+            <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
+            <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
+            <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
+            <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
+            <rect x="50" y="14" width="18" height="4" rx="2" fill="rgba(255,255,255,.5)"/>
+            <rect x="50" y="24" width="14" height="3" rx="1.5" fill="rgba(255,255,255,.32)"/>
+            <rect x="50" y="31" width="16" height="3" rx="1.5" fill="rgba(255,255,255,.24)"/>
+          </svg>
+        </div>
+        <h3>Nothing here yet</h3>
+        <p class="state-note">The library is being curated. Check back soon for new titles.</p>
+      </div>
     </section>
   </main>
 
-  <script src="js/auth.js" defer></script>
+  <!-- ======================= Details modal ======================= -->
+  <div class="modal" id="detailsModal" hidden role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel modal-panel--details">
+      <div class="modal-header">
+        <h2 id="detailsTitle">Book Details</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
+      </div>
+      <div id="detailsContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast region -->
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/shared.js" defer></script>
+  <script src="js/customer.js" defer></script>
 </body>
 </html>

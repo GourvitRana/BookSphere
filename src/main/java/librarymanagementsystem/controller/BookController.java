@@ -6,6 +6,7 @@ import librarymanagementsystem.dto.BookResponseDTO;
 import librarymanagementsystem.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class BookController {
 
     // Add Book
     @PostMapping
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<BookResponseDTO> addBook(@Valid @RequestBody BookRequestDTO requestDTO) {
         return new ResponseEntity<>(bookService.addBook(requestDTO), HttpStatus.CREATED);
     }
@@ -40,6 +42,7 @@ public class BookController {
 
     // Update Book
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<BookResponseDTO> updateBook(@PathVariable Long id,
                                                       @Valid @RequestBody BookRequestDTO requestDTO) {
         return ResponseEntity.ok(bookService.updateBook(id, requestDTO));
@@ -47,6 +50,7 @@ public class BookController {
 
     // Delete Book
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<String> deleteBook(@PathVariable Long id) {
 
         bookService.deleteBook(id);

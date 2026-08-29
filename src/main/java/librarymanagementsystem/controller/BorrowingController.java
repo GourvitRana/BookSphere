@@ -2,6 +2,7 @@ package librarymanagementsystem.controller;
 
 import librarymanagementsystem.dto.BorrowRequestDTO;
 import librarymanagementsystem.dto.BorrowResponseDTO;
+import librarymanagementsystem.dto.LibrarianBorrowResponseDTO;
 import librarymanagementsystem.entity.User;
 import librarymanagementsystem.service.AuthService;
 import librarymanagementsystem.service.BorrowingService;
@@ -49,17 +50,17 @@ public class BorrowingController {
 
     @GetMapping
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public ResponseEntity<List<BorrowResponseDTO>> getAllBorrowings(Authentication authentication) {
+    public ResponseEntity<List<LibrarianBorrowResponseDTO>> getAllBorrowings(Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
-        List<BorrowResponseDTO> borrowings = borrowingService.getAllBorrowings();
+        List<LibrarianBorrowResponseDTO> borrowings = borrowingService.getAllBorrowingsForLibrarian();
         return ResponseEntity.ok(borrowings);
     }
 
     @GetMapping("/active")
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public ResponseEntity<List<BorrowResponseDTO>> getActiveBorrowings(Authentication authentication) {
+    public ResponseEntity<List<LibrarianBorrowResponseDTO>> getActiveBorrowings(Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
-        List<BorrowResponseDTO> borrowings = borrowingService.getActiveBorrowings();
+        List<LibrarianBorrowResponseDTO> borrowings = borrowingService.getActiveBorrowingsForLibrarian();
         return ResponseEntity.ok(borrowings);
     }
 

@@ -52,11 +52,11 @@
         <a class="sidebar-link" href="#collection" data-scroll="collection">
           <span>Books</span>
         </a>
-        <span class="sidebar-link is-disabled">
-          <span>Members</span><span class="soon-tag">Next stage</span>
-        </span>
-        <span class="sidebar-link is-disabled">
-          <span>Borrowing</span><span class="soon-tag">Next stage</span>
+        <a class="sidebar-link" href="#borrowings" data-scroll="borrowings">
+          <span>Borrowings</span>
+        </a>
+        <a class="sidebar-link" href="#members" data-scroll="members">
+          <span>Members</span>
         </span>
       </nav>
 
@@ -193,6 +193,237 @@
           <button type="button" class="btn btn-primary" id="emptyAddBtn">Add your first book</button>
         </div>
       </section>
+
+      <!-- Borrowings Management -->
+      <section id="borrowings" class="dash-section" aria-labelledby="borrowingsTitle">
+        <div class="collection-toolbar">
+          <h2 class="section-title" id="borrowingsTitle">Borrowing Management</h2>
+          <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <label class="sr-only" for="borrowingsSearchInput">Search borrowings by book title, author, or borrowing ID</label>
+            <input type="search" id="borrowingsSearchInput" class="search-input"
+                   placeholder="Search by book title, author, or borrowing ID&hellip;" autocomplete="off">
+            <button type="button" class="search-clear" id="borrowingsSearchClear" aria-label="Clear search" hidden>&times;</button>
+          </div>
+          <div class="filter-group">
+            <label class="sr-only" for="borrowingsFilter">Filter by status</label>
+            <select id="borrowingsFilter" class="filter-select">
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="returned">Returned</option>
+              <option value="overdue">Overdue</option>
+            </select>
+          </div>
+          <span class="result-count" id="borrowingsResultCount" aria-live="polite"></span>
+        </div>
+
+        <div class="stat-grid stat-grid--4" id="borrowingsStats">
+          <article class="stat-card stat-card--books">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Total Borrowings</span>
+              <span class="stat-value" id="statTotalBorrowings">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--copies">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3Z"/><path d="M4 12l8 4.5 8-4.5"/><path d="M4 16.5l8 4.5 8-4.5"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Active Borrowings</span>
+              <span class="stat-value" id="statActiveBorrowings">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--categories">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 5l9-2 9 2v14l-9 2-9-2V5Z"/><path d="M3 5l9 2 9-2M12 7v14"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Returned Borrowings</span>
+              <span class="stat-value" id="statReturnedBorrowings">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--copies">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/><path d="M12 8v4l3 2"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Overdue Borrowings</span>
+              <span class="stat-value" id="statOverdueBorrowings">0</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="borrowings-table" id="borrowingsTable" hidden>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrowing ID</th>
+                  <th>Member</th>
+                  <th>Book</th>
+                  <th>Author</th>
+                  <th>Borrowed</th>
+                  <th>Due</th>
+                  <th>Returned</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="borrowingsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="state-panel" id="borrowingsLoading" role="status" aria-label="Loading borrowings">
+          <div class="skeleton-list" aria-hidden="true">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+          <p class="state-note">Loading borrowings&hellip;</p>
+        </div>
+
+        <div class="state-panel state-panel--center" id="borrowingsError" role="alert" hidden>
+          <div class="state-glyph" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L2.4 17.3A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.7L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          </div>
+          <h3>Couldn't load borrowings</h3>
+          <p class="state-note">The server may be offline. Check that the backend is running, then try again.</p>
+          <button type="button" class="btn btn-ghost" id="borrowingsRetry">Try again</button>
+        </div>
+
+        <div class="state-panel state-panel--center" id="borrowingsEmpty" hidden>
+          <div class="empty-art" aria-hidden="true">
+            <svg viewBox="0 0 120 96">
+              <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
+              <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
+              <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
+              <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
+              <rect x="50" y="14" width="18" height="4" rx="2" fill="rgba(255,255,255,.5)"/>
+              <rect x="50" y="24" width="14" height="3" rx="1.5" fill="rgba(255,255,255,.32)"/>
+              <rect x="50" y="31" width="16" height="3" rx="1.5" fill="rgba(255,255,255,.24)"/>
+            </svg>
+          </div>
+          <h3>No borrowings found</h3>
+          <p class="state-note">No borrowings match your search or filter criteria.</p>
+        </div>
+
+      <!-- Members Management -->
+      <section id="members" class="dash-section" aria-labelledby="membersTitle">
+        <div class="collection-toolbar">
+          <h2 class="section-title" id="membersTitle">Members Management</h2>
+          <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <label class="sr-only" for="membersSearchInput">Search members by name or email</label>
+            <input type="search" id="membersSearchInput" class="search-input"
+                   placeholder="Search by name or email&hellip;" autocomplete="off">
+            <button type="button" class="search-clear" id="membersSearchClear" aria-label="Clear search" hidden>&times;</button>
+          </div>
+          <span class="result-count" id="membersResultCount" aria-live="polite"></span>
+        </div>
+
+        <div class="stat-grid stat-grid--4" id="membersStats">
+          <article class="stat-card stat-card--books">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Total Members</span>
+              <span class="stat-value" id="statTotalMembers">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--copies">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3Z"/><path d="M4 12l8 4.5 8-4.5"/><path d="M4 16.5l8 4.5 8-4.5"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Active Members</span>
+              <span class="stat-value" id="statActiveMembers">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--categories">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 5l9-2 9 2v14l-9 2-9-2V5Z"/><path d="M3 5l9 2 9-2M12 7v14"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Total Borrowings</span>
+              <span class="stat-value" id="statMembersTotalBorrowings">0</span>
+            </div>
+          </article>
+
+          <article class="stat-card stat-card--copies">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/><path d="M12 8v4l3 2"/></svg>
+            </span>
+            <div class="stat-body">
+              <span class="stat-label">Active Borrowings</span>
+              <span class="stat-value" id="statMembersActiveBorrowings">0</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="members-table" id="membersTable" hidden>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Member ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Current Borrowings</th>
+                  <th>Total Borrowings</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="membersBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="state-panel" id="membersLoading" role="status" aria-label="Loading members">
+          <div class="skeleton-list" aria-hidden="true">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+          <p class="state-note">Loading members&hellip;</p>
+        </div>
+
+        <div class="state-panel state-panel--center" id="membersError" role="alert" hidden>
+          <div class="state-glyph" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L2.4 17.3A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.7L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          </div>
+          <h3>Couldn't load members</h3>
+          <p class="state-note">The server may be offline. Check that the backend is running, then try again.</p>
+          <button type="button" class="btn btn-ghost" id="membersRetry">Try again</button>
+        </div>
+
+        <div class="state-panel state-panel--center" id="membersEmpty" hidden>
+          <div class="empty-art" aria-hidden="true">
+            <svg viewBox="0 0 120 96">
+              <rect x="18" y="26" width="34" height="48" rx="6" fill="none" stroke="#F5C56B" stroke-width="2.5" opacity=".85"/>
+              <rect x="30" y="14" width="34" height="48" rx="6" fill="none" stroke="#7ED6C8" stroke-width="2.5" opacity=".85"/>
+              <rect x="42" y="4" width="34" height="48" rx="6" fill="#2A303F"/>
+              <rect x="42" y="4" width="34" height="48" rx="6" fill="none" stroke="#A9A3F5" stroke-width="2.5"/>
+              <rect x="50" y="14" width="18" height="4" rx="2" fill="rgba(255,255,255,.5)"/>
+              <rect x="50" y="24" width="14" height="3" rx="1.5" fill="rgba(255,255,255,.32)"/>
+              <rect x="50" y="31" width="16" height="3" rx="1.5" fill="rgba(255,255,255,.24)"/>
+            </svg>
+          </div>
+          <h3>No members found</h3>
+          <p class="state-note">No members match your search criteria.</p>
+        </div>
+
+      </section>
     </main>
   </div>
 
@@ -274,6 +505,36 @@
         <div class="form-actions">
           <button type="button" class="btn btn-ghost" data-close>Cancel</button>
           <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete book</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= Return confirmation modal ======================= -->
+  <div class="modal" id="returnConfirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="returnConfirmTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel modal-panel--sm">
+      <div class="modal-header">
+        <h2 id="returnConfirmTitle">Return Book</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to return this book?</p>
+        <div class="return-confirm-content">
+          <p class="return-confirm-label">Book</p>
+          <p class="return-confirm-value" id="returnConfirmBookTitle"></p>
+          <p class="return-confirm-label">Borrowing ID</p>
+          <p class="return-confirm-value" id="returnConfirmBorrowingId"></p>
+          <p class="return-confirm-label">Due Date</p>
+          <p class="return-confirm-value" id="returnConfirmDueDate"></p>
+          <p class="return-confirm-label">Current Status</p>
+          <p class="return-confirm-value" id="returnConfirmStatus"></p>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+          <button type="button" class="btn btn-danger" id="returnConfirmBtn">
+            <span class="btn-label">Return Book</span>
+          </button>
         </div>
       </div>
     </div>

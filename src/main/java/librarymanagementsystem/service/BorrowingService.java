@@ -2,6 +2,7 @@ package librarymanagementsystem.service;
 
 import librarymanagementsystem.dto.BorrowRequestDTO;
 import librarymanagementsystem.dto.BorrowResponseDTO;
+import librarymanagementsystem.dto.LibrarianBorrowResponseDTO;
 import librarymanagementsystem.entity.Book;
 import librarymanagementsystem.entity.Borrowing;
 import librarymanagementsystem.entity.BorrowingStatus;
@@ -77,10 +78,24 @@ public class BorrowingService {
                 .collect(Collectors.toList());
     }
 
+    public List<LibrarianBorrowResponseDTO> getAllBorrowingsForLibrarian() {
+        return borrowingRepository.findAll()
+                .stream()
+                .map(this::mapToLibrarianResponse)
+                .collect(Collectors.toList());
+    }
+
     public List<BorrowResponseDTO> getActiveBorrowings() {
         return borrowingRepository.findByStatus(BorrowingStatus.ACTIVE)
                 .stream()
                 .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<LibrarianBorrowResponseDTO> getActiveBorrowingsForLibrarian() {
+        return borrowingRepository.findByStatus(BorrowingStatus.ACTIVE)
+                .stream()
+                .map(this::mapToLibrarianResponse)
                 .collect(Collectors.toList());
     }
 
@@ -114,6 +129,25 @@ public class BorrowingService {
                 .bookId(borrowing.getBook().getId())
                 .bookTitle(borrowing.getBook().getTitle())
                 .bookAuthor(borrowing.getBook().getAuthor())
+                .borrowedAt(borrowing.getBorrowedAt())
+                .dueDate(borrowing.getDueDate())
+                .returnedAt(borrowing.getReturnedAt())
+                .status(borrowing.getStatus())
+                .build();
+    }
+
+    private LibrarianBorrowResponseDTO mapToLibrarianResponse(Borrowing borrowing) {
+        User user = borrowing.getUser();
+        Book book = borrowing.getBook();
+        return LibrarianBorrowResponseDTO.builder()
+                .id(borrowing.getId())
+                .userId(user.getId())
+                .userName(user.getName())
+                .userEmail(user.getEmail())
+                .userRole(user.getRole())
+                .bookId(book.getId())
+                .bookTitle(book.getTitle())
+                .bookAuthor(book.getAuthor())
                 .borrowedAt(borrowing.getBorrowedAt())
                 .dueDate(borrowing.getDueDate())
                 .returnedAt(borrowing.getReturnedAt())

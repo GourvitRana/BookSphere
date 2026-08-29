@@ -61,12 +61,23 @@
 /* --------------------------------------------------------------------------
    2. Reset & base
    -------------------------------------------------------------------------- */
-*,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure [hidden] attribute works globally */
+[hidden] {
+  display: none !important;
+}
 }
 
 html {

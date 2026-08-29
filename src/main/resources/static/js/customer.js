@@ -614,21 +614,25 @@ function toggleStatePanels() {
 }
 
 async function loadInitial() {
+  // Load books and borrowings independently - don't couple them
   els.loading.hidden = false;
   els.error.hidden = true;
   els.empty.hidden = true;
   els.grid.hidden = true;
 
+  // Load books
   try {
     const books = await authRequest('/books');
     state.books = Array.isArray(books) ? books : [];
     renderStatistics();
     renderCollection();
-    await loadMyBorrowings();
   } catch (err) {
     els.loading.hidden = true;
     els.error.hidden = false;
   }
+
+  // Load borrowings independently
+  await loadMyBorrowings();
 }
 
 async function main() {

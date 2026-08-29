@@ -14,6 +14,7 @@ async function authRequest(path, options = {}) {
   try {
     response = await fetch(path, {
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       ...options,
     });
   } catch (err) {

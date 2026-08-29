@@ -1,23 +1,8 @@
-/* ==========================================================================
-   BookSphere — customer dashboard controller
-   Requires js/shared.js (authRequest, getMe, escapeHtml, formatPrice,
-   categoryHue, toast) and the customer-dashboard.html markup.
-   Sections:
-   1. State & DOM references
-   2. Role guard / session
-   3. Rendering (stats, cards, details, borrowings)
-   4. Search & filter
-   5. Modal management
-   6. Borrow / Return flows
-   7. Nav & logout
-   8. Initialization
-   ========================================================================== */
-
 'use strict';
 
 /* --------------------------------------------------------------------------
-   1. State & DOM references
-   -------------------------------------------------------------------------- */
+    State & DOM references
+    -------------------------------------------------------------------------- */
 const state = {
   books: [],
   borrowings: [],
@@ -69,11 +54,15 @@ const els = {
   borrowingsErrorMsg: document.getElementById('borrowingsErrorMsg'),
   borrowingsRetry: document.getElementById('borrowingsRetry'),
   borrowingsEmpty: document.getElementById('borrowingsEmpty'),
+
+  profileName: document.getElementById('profileName'),
+  profileEmail: document.getElementById('profileEmail'),
+  profileRole: document.getElementById('profileRole'),
 };
 
 /* --------------------------------------------------------------------------
-   2. Role guard / session
-   -------------------------------------------------------------------------- */
+    2. Role guard / session
+    -------------------------------------------------------------------------- */
 async function guard() {
   const me = await getMe();
   if (!me) {
@@ -92,8 +81,18 @@ async function guard() {
 }
 
 /* --------------------------------------------------------------------------
-   3. Rendering
-   -------------------------------------------------------------------------- */
+    3a. Profile rendering
+    -------------------------------------------------------------------------- */
+function renderProfile() {
+  if (!state.user) return;
+  if (els.profileName) els.profileName.textContent = state.user.name || '—';
+  if (els.profileEmail) els.profileEmail.textContent = state.user.email || '—';
+  if (els.profileRole) els.profileRole.textContent = state.user.role || '—';
+}
+
+/* --------------------------------------------------------------------------
+    3. Rendering
+    -------------------------------------------------------------------------- */
 function renderStatistics() {
   const availableBooks = state.books.filter((book) => Number(book.quantity) > 0).length;
   const totalBooks = state.books.length;
@@ -227,7 +226,6 @@ function renderDetails(book) {
 
   els.detailsContent.innerHTML = detailsHtml;
 
-  // Render footer with action button
   let footerHtml = '';
   if (available && !hasActiveBorrowing) {
     footerHtml = `
@@ -319,8 +317,8 @@ function renderBorrowings() {
 }
 
 /* --------------------------------------------------------------------------
-   4. Search & filter
-   -------------------------------------------------------------------------- */
+    4. Search & filter
+    -------------------------------------------------------------------------- */
 function handleSearch() {
   state.query = els.search.value;
   renderCollection();
@@ -334,8 +332,8 @@ function clearSearch() {
 }
 
 /* --------------------------------------------------------------------------
-   5. Modal management
-   -------------------------------------------------------------------------- */
+    5. Modal management
+    -------------------------------------------------------------------------- */
 function openModal(modal) {
   state.lastFocused = document.activeElement;
   modal.hidden = false;
@@ -364,8 +362,8 @@ document.addEventListener('keydown', (event) => {
 });
 
 /* --------------------------------------------------------------------------
-   6. Borrow / Return flows
-   -------------------------------------------------------------------------- */
+    6. Borrow / Return flows
+    -------------------------------------------------------------------------- */
 function openBorrowConfirm(book) {
   state.pendingBorrowBookId = book.id;
   els.borrowConfirmTitleText.textContent = book.title;
@@ -443,7 +441,6 @@ function handleApiError(err, action) {
 
   const msg = err.message || 'Something went wrong.';
 
-  // Map common backend error messages
   if (msg.includes('already borrowed') || msg.includes('already borrowed')) {
     toast('Cannot borrow', 'You have already borrowed this book.', 'error');
   } else if (msg.includes('not available') || msg.includes('available')) {
@@ -461,18 +458,58 @@ function handleApiError(err, action) {
 }
 
 /* --------------------------------------------------------------------------
-   7. Nav & logout
-   -------------------------------------------------------------------------- */
-function wireNav() {
-  document.querySelectorAll('[data-scroll]').forEach((link) => {
+    7. Section navigation
+    -------------------------------------------------------------------------- */
+const SECTIONS = ['dashboard', 'books', 'borrowings', 'profile'];
+
+function showSection(sectionName) {
+  SECTIONS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.hidden = (id !== sectionName);
+    }
+  });
+
+  document.querySelectorAll('.sidebar-link').forEach((link) => {
+    link.classList.toggle('active', link.dataset.section === sectionName);
+  });
+
+  history.replaceState(null, '', '#' + sectionName);
+
+  if (sectionName === 'profile') renderProfile();
+}
+
+function wireSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebarClose = document.getElementById('sidebarClose');
+
+  const openSidebar = () => {
+    sidebar.classList.add('open');
+    backdrop.classList.add('show');
+  };
+  const closeSidebar = () => {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('show');
+  };
+
+  if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+  if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+  if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+  document.querySelectorAll('[data-section]').forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
-      const target = document.getElementById(link.dataset.scroll);
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      closeSidebar();
+      showSection(link.dataset.section);
     });
   });
 }
 
+/* --------------------------------------------------------------------------
+    8. Nav & logout
+    -------------------------------------------------------------------------- */
 function wireLogout() {
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     try {
@@ -483,8 +520,8 @@ function wireLogout() {
 }
 
 /* --------------------------------------------------------------------------
-   8. Data loading
-   -------------------------------------------------------------------------- */
+    9. Data loading
+    -------------------------------------------------------------------------- */
 async function loadMyBorrowings() {
   els.borrowingsLoading.hidden = false;
   els.borrowingsError.hidden = true;
@@ -522,15 +559,14 @@ async function refreshCustomerData() {
 }
 
 /* --------------------------------------------------------------------------
-   9. Event wiring
-   -------------------------------------------------------------------------- */
+    10. Event wiring
+    -------------------------------------------------------------------------- */
 function wireEvents() {
   els.retryBtn.addEventListener('click', loadBooks);
   els.borrowingsRetry.addEventListener('click', loadMyBorrowings);
   els.search.addEventListener('input', handleSearch);
   els.searchClear.addEventListener('click', clearSearch);
 
-  // Book card / grid interactions
   els.grid.addEventListener('click', (event) => {
     const actionBtn = event.target.closest('[data-action]');
     if (actionBtn) {
@@ -568,7 +604,6 @@ function wireEvents() {
     }
   });
 
-  // Details modal footer actions
   els.detailsFooter.addEventListener('click', (event) => {
     const actionBtn = event.target.closest('[data-action]');
     if (actionBtn) {
@@ -580,13 +615,9 @@ function wireEvents() {
     }
   });
 
-  // Borrow confirm modal
   els.borrowConfirmBtn.addEventListener('click', confirmBorrow);
-
-  // Return confirm modal
   els.returnConfirmBtn.addEventListener('click', confirmReturn);
 
-  // Borrowings table actions
   els.borrowingsBody.addEventListener('click', (event) => {
     const actionBtn = event.target.closest('[data-action]');
     if (actionBtn) {
@@ -603,8 +634,8 @@ function wireEvents() {
 }
 
 /* --------------------------------------------------------------------------
-   10. Initialization
-   -------------------------------------------------------------------------- */
+    11. Initialization
+    -------------------------------------------------------------------------- */
 function toggleStatePanels() {
   const hasBooks = state.books.length > 0;
   els.empty.hidden = hasBooks;
@@ -614,13 +645,15 @@ function toggleStatePanels() {
 }
 
 async function loadInitial() {
-  // Load books and borrowings independently - don't couple them
   els.loading.hidden = false;
   els.error.hidden = true;
   els.empty.hidden = true;
   els.grid.hidden = true;
 
-  // Load books
+  const hash = location.hash.replace('#', '') || 'dashboard';
+  const sectionMap = { books: 'books', borrowings: 'borrowings', profile: 'profile', dashboard: 'dashboard' };
+  const initialSection = sectionMap[hash] || 'dashboard';
+
   try {
     const books = await authRequest('/books');
     state.books = Array.isArray(books) ? books : [];
@@ -631,15 +664,16 @@ async function loadInitial() {
     els.error.hidden = false;
   }
 
-  // Load borrowings independently
   await loadMyBorrowings();
+  showSection(initialSection);
+  renderProfile();
 }
 
 async function main() {
   const me = await guard();
   if (!me) return;
 
-  wireNav();
+  wireSidebar();
   wireLogout();
   wireEvents();
   await loadInitial();

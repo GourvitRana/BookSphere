@@ -661,6 +661,29 @@ function renderDetails(book) {
 }
 
 /* --------------------------------------------------------------------------
+    Sidebar & section switching
+    -------------------------------------------------------------------------- */
+function showSection(sectionName) {
+  const sections = ['overview', 'collection', 'borrowings', 'members'];
+  sections.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (id === sectionName) {
+        el.hidden = false;
+      } else {
+        el.hidden = true;
+      }
+    }
+  });
+
+  document.querySelectorAll('.sidebar-link').forEach((link) => {
+    link.classList.toggle('active', link.dataset.section === sectionName);
+  });
+
+  history.replaceState(null, '', '#' + sectionName);
+}
+
+/* --------------------------------------------------------------------------
     Sidebar & logout
     -------------------------------------------------------------------------- */
 function wireSidebar() {
@@ -682,12 +705,11 @@ function wireSidebar() {
   if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
   if (backdrop) backdrop.addEventListener('click', closeSidebar);
 
-  document.querySelectorAll('[data-scroll]').forEach((link) => {
+  document.querySelectorAll('[data-section]').forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
       closeSidebar();
-      const target = document.getElementById(link.dataset.scroll);
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showSection(link.dataset.section);
     });
   });
 }
@@ -787,6 +809,10 @@ async function loadInitial() {
   els.empty.hidden = true;
   els.grid.hidden = true;
 
+  const hash = location.hash.replace('#', '') || 'overview';
+  const sectionMap = { books: 'collection', overview: 'overview', borrowings: 'borrowings', members: 'members' };
+  const initialSection = sectionMap[hash] || 'overview';
+
   try {
     const books = await authRequest('/books');
     state.books = Array.isArray(books) ? books : [];
@@ -798,6 +824,8 @@ async function loadInitial() {
     els.loading.hidden = true;
     els.error.hidden = false;
   }
+
+  showSection(initialSection);
 }
 
 /* --------------------------------------------------------------------------

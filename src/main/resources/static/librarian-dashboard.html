@@ -46,18 +46,18 @@
       </div>
 
       <nav class="sidebar-nav" aria-label="Primary">
-        <a class="sidebar-link active" href="#overview" data-scroll="overview">
+        <a class="sidebar-link active" href="#" data-section="overview">
           <span>Dashboard</span>
         </a>
-        <a class="sidebar-link" href="#collection" data-scroll="collection">
+        <a class="sidebar-link" href="#" data-section="collection">
           <span>Books</span>
         </a>
-        <a class="sidebar-link" href="#borrowings" data-scroll="borrowings">
+        <a class="sidebar-link" href="#" data-section="borrowings">
           <span>Borrowings</span>
         </a>
-        <a class="sidebar-link" href="#members" data-scroll="members">
+        <a class="sidebar-link" href="#" data-section="members">
           <span>Members</span>
-        </span>
+        </a>
       </nav>
 
       <div class="sidebar-foot">
@@ -136,7 +136,7 @@
       </section>
 
       <!-- Book collection -->
-      <section id="collection" class="dash-section" aria-labelledby="collectionTitle">
+      <section id="collection" class="dash-section" aria-labelledby="collectionTitle" hidden>
         <div class="collection-toolbar">
           <h2 class="section-title" id="collectionTitle">Book Collection</h2>
           <div class="search-wrap">
@@ -195,7 +195,7 @@
       </section>
 
       <!-- Borrowings Management -->
-      <section id="borrowings" class="dash-section" aria-labelledby="borrowingsTitle">
+      <section id="borrowings" class="dash-section" aria-labelledby="borrowingsTitle" hidden>
         <div class="collection-toolbar">
           <h2 class="section-title" id="borrowingsTitle">Borrowing Management</h2>
           <div class="search-wrap">
@@ -313,9 +313,10 @@
           <h3>No borrowings found</h3>
           <p class="state-note">No borrowings match your search or filter criteria.</p>
         </div>
+      </section>
 
       <!-- Members Management -->
-      <section id="members" class="dash-section" aria-labelledby="membersTitle">
+      <section id="members" class="dash-section" aria-labelledby="membersTitle" hidden>
         <div class="collection-toolbar">
           <h2 class="section-title" id="membersTitle">Members Management</h2>
           <div class="search-wrap">

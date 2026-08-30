@@ -39,4 +39,23 @@ public class UserController {
         UserResponseDTO user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
+
+    @PatchMapping("/{id}/deactivate")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<UserResponseDTO> deactivateUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.setActive(id, false));
+    }
+
+    @PatchMapping("/{id}/activate")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<UserResponseDTO> activateUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.setActive(id, true));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("Member deleted successfully.");
+    }
 }

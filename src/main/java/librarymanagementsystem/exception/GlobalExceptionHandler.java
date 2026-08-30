@@ -37,6 +37,31 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(BookHasBorrowingsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBookHasBorrowings(BookHasBorrowingsException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccountDeactivatedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAccountDeactivated(AccountDeactivatedException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(MemberHasActiveBorrowingsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMemberHasActiveBorrowings(MemberHasActiveBorrowingsException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(MemberHasHistoryException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMemberHasHistory(MemberHasHistoryException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(LibrarianDeactivationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleLibrarianDeactivation(LibrarianDeactivationException ex) {
+        return build(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
     @ExceptionHandler(BorrowingNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleBorrowingNotFound(BorrowingNotFoundException ex) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage());

@@ -75,4 +75,11 @@ public class BorrowingController {
         BorrowResponseDTO response = borrowingService.returnBook(id, currentUser, isLibrarian);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<Void> deleteBorrowing(@PathVariable Long id) {
+        borrowingService.deleteBorrowing(id);
+        return ResponseEntity.ok().build();
+    }
 }

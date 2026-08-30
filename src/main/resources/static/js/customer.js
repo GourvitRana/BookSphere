@@ -676,6 +676,7 @@ async function main() {
   wireSidebar();
   wireLogout();
   wireEvents();
+  initThemeToggle(document.getElementById('themeToggle'));
   await loadInitial();
 }
 

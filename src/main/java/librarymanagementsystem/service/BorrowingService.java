@@ -12,6 +12,7 @@ import librarymanagementsystem.exception.BorrowingAlreadyReturnedException;
 import librarymanagementsystem.exception.BorrowingNotFoundException;
 import librarymanagementsystem.exception.ResourceNotFoundException;
 import librarymanagementsystem.exception.UnauthorizedBorrowingOperationException;
+import librarymanagementsystem.exception.AccountDeactivatedException;
 import librarymanagementsystem.repository.BookRepository;
 import librarymanagementsystem.repository.BorrowingRepository;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,10 @@ public class BorrowingService {
     public BorrowResponseDTO borrow(Long bookId, User currentUser) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with ID: " + bookId));
+
+        if (Boolean.FALSE.equals(currentUser.getActive())) {
+            throw new AccountDeactivatedException("Your account is deactivated and cannot borrow books.");
+        }
 
         if (book.getQuantity() <= 0) {
             throw new BookNotAvailableException("Book is not available for borrowing.");
@@ -123,8 +128,24 @@ public class BorrowingService {
         return mapToResponse(saved);
     }
 
-    private BorrowResponseDTO mapToResponse(Borrowing borrowing) {
-        return BorrowResponseDTO.builder()
+    @Transactional
+    public void deleteBorrowing(Long id) {
+        Borrowing borrowing = borrowingRepository.findById(id)
+                .orElseThrow(() -> new BorrowingNotFoundException("Borrowing not found with ID: " + id));
+
+        // Restoring a copy only makes sense for borrowings that still hold one
+        // (active or overdue). Returned borrowings already gave the copy back.
+        if (borrowing.getStatus() == BorrowingStatus.ACTIVE
+                || borrowing.getStatus() == BorrowingStatus.OVERDUE) {
+            Book book = borrowing.getBook();
+            book.setQuantity(book.getQuantity() + 1);
+            bookRepository.save(book);
+        }
+
+        borrowingRepository.delete(borrowing);
+    }
+
+    private BorrowResponseDTO mapToResponse(Borrowing borrowing) {        return BorrowResponseDTO.builder()
                 .id(borrowing.getId())
                 .bookId(borrowing.getBook().getId())
                 .bookTitle(borrowing.getBook().getTitle())

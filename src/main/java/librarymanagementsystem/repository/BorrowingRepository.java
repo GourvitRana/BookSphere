@@ -18,4 +18,10 @@ public interface BorrowingRepository extends JpaRepository<Borrowing, Long> {
     Optional<Borrowing> findByUserIdAndBookIdAndStatus(Long userId, Long bookId, BorrowingStatus status);
 
     List<Borrowing> findByStatus(BorrowingStatus status);
+
+    boolean existsByBookId(Long bookId);
+
+    long countByUserId(Long userId);
+
+    long countByUserIdAndStatus(Long userId, BorrowingStatus status);
 }

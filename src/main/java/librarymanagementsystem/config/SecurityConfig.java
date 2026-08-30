@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/books").hasRole("LIBRARIAN")
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/books/**").hasRole("LIBRARIAN")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/books/**").hasRole("LIBRARIAN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/users/**").hasRole("LIBRARIAN")
                         // Everything else requires an authenticated session
                         .anyRequest().authenticated())
 

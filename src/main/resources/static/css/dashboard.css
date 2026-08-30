@@ -98,9 +98,9 @@
 }
 
 .sidebar-link.active {
-  background: linear-gradient(135deg, rgba(240, 182, 83, 0.16), rgba(240, 182, 83, 0.06));
-  color: var(--accent-strong);
-  border: 1px solid rgba(240, 182, 83, 0.22);
+  background: linear-gradient(135deg, var(--primary-soft), rgba(63, 141, 124, 0.04));
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
 }
 
 .sidebar-link.is-disabled {
@@ -128,9 +128,12 @@
   margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.sidebar-logout { width: 100%; }
+.sidebar-logout { flex: 1; justify-content: flex-start; }
 
 /* --------------------------------------------------------------------------
    3. Dashboard header
@@ -235,15 +238,15 @@
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 999px;
-  color: var(--teal);
-  background: rgba(111, 208, 194, 0.12);
-  border: 1px solid rgba(111, 208, 194, 0.3);
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
 }
 
 .inv-pill--empty {
   color: var(--danger-strong);
-  background: rgba(239, 109, 109, 0.1);
-  border-color: rgba(239, 109, 109, 0.3);
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
 }
 
 .inv-pill svg { width: 14px; height: 14px; }
@@ -277,7 +280,7 @@
 }
 
 .cust-nav a:hover { color: var(--text); background: var(--surface-hover); }
-.cust-nav a.active { color: var(--accent-strong); background: rgba(240, 182, 83, 0.12); }
+.cust-nav a.active { color: var(--primary); background: var(--primary-soft); }
 
 .cust-nav .is-disabled {
   opacity: 0.55;
@@ -304,7 +307,7 @@
 }
 
 .cust-hero .hero-accent {
-  background: linear-gradient(100deg, #7ED6C8, #6FD0C2 55%, #4BA89B);
+  background: linear-gradient(100deg, #5cb0a0, #4a9e8d 55%, #3f8d7c);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -322,7 +325,7 @@
   top: 20px;
   width: 260px;
   height: 260px;
-  background: radial-gradient(circle, rgba(111, 208, 194, 0.16), rgba(159, 154, 238, 0.1) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(63, 141, 124, 0.14), rgba(200, 162, 76, 0.08) 45%, transparent 70%);
   filter: blur(20px);
   z-index: -1;
   pointer-events: none;
@@ -348,8 +351,8 @@
   border-radius: 999px;
 }
 
-.avail-status--in { color: var(--success); background: rgba(111, 208, 162, 0.12); border: 1px solid rgba(111, 208, 162, 0.3); }
-.avail-status--out { color: var(--danger-strong); background: rgba(239, 109, 109, 0.1); border: 1px solid rgba(239, 109, 109, 0.3); }
+.avail-status--in { color: var(--success); background: var(--success-soft); border: 1px solid var(--success-border); }
+.avail-status--out { color: var(--danger-strong); background: var(--danger-soft); border: 1px solid var(--danger-border); }
 
 .coming-pill {
   display: inline-flex;
@@ -479,8 +482,8 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--danger-strong);
-  background: rgba(239, 109, 109, 0.1);
-  border: 1px solid rgba(239, 109, 109, 0.3);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
   border-radius: 999px;
   padding: 1px 7px;
   margin-left: 8px;
@@ -489,11 +492,11 @@
 
 /* Row hover for overdue rows */
 .borrowings-table tbody tr.overdue {
-  background: rgba(239, 109, 109, 0.04);
+  background: rgba(199, 92, 74, 0.05);
 }
 
 .borrowings-table tbody tr.overdue:hover {
-  background: rgba(239, 109, 109, 0.08);
+  background: rgba(199, 92, 74, 0.09);
 }
 
 /* Return confirm modal content */
@@ -598,9 +601,9 @@
 }
 
 .status-active {
-  color: var(--teal);
-  background: rgba(111, 208, 194, 0.12);
-  border: 1px solid rgba(111, 208, 194, 0.3);
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
 }
 
 .status-returned {
@@ -609,10 +612,82 @@
   border: 1px solid var(--border);
 }
 
+.status-deactivated {
+  color: var(--danger-strong);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+}
+
+.member-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  white-space: nowrap;
+}
+
+.btn-danger-ghost {
+  color: var(--danger-strong);
+  border-color: var(--danger-border);
+}
+.btn-danger-ghost:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger-strong);
+}
+
+.btn-success-ghost {
+  color: var(--success-strong);
+  border-color: var(--success-border);
+}
+.btn-success-ghost:hover {
+  background: var(--success-soft);
+  border-color: var(--success-strong);
+}
+
+.delete-book-meta {
+  margin-bottom: 12px;
+}
+.delete-book-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px;
+}
+.delete-book-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0 0 2px;
+}
+
+.member-detail {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 8px 16px;
+  margin: 0 0 4px;
+}
+.member-detail dt {
+  color: var(--text-dim);
+  font-size: 13px;
+}
+.member-detail dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.state-error {
+  color: var(--danger-strong);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin: 0 0 8px;
+}
+
 .status-overdue {
   color: var(--danger-strong);
-  background: rgba(239, 109, 109, 0.1);
-  border: 1px solid rgba(239, 109, 109, 0.3);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
 }
 
 .status-text {
@@ -711,4 +786,36 @@
   .members-table td:nth-child(6) {
     display: none;
   }
+}
+
+/* --------------------------------------------------------------------------
+   10. Delete action buttons
+   -------------------------------------------------------------------------- */
+.borrow-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.icon-btn--delete {
+  color: var(--text-dim);
+  border-color: var(--border);
+}
+.icon-btn--delete:hover {
+  color: var(--danger-strong);
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+.icon-btn--delete:focus-visible {
+  outline: 2px solid var(--danger-strong);
+  outline-offset: 2px;
+}
+
+.state-warning {
+  color: var(--danger-strong);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
 }

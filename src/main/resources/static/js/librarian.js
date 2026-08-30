@@ -14,6 +14,10 @@ const state = {
   editingId: null,
   pendingDeleteId: null,
   pendingReturnId: null,
+  pendingDeleteBorrowingId: null,
+  pendingMember: null,
+  pendingMemberTargetActive: false,
+  pendingMemberDeleteId: null,
   lastFocused: null,
   user: null,
 };
@@ -87,6 +91,23 @@ const els = {
   membersSearchInput: document.getElementById('membersSearchInput'),
   membersSearchClear: document.getElementById('membersSearchClear'),
   membersRetry: document.getElementById('membersRetry'),
+
+  memberModal: document.getElementById('memberModal'),
+  memberModalBody: document.getElementById('memberModalBody'),
+  memberToggleBtn: document.getElementById('memberToggleBtn'),
+  memberConfirmModal: document.getElementById('memberConfirmModal'),
+  memberConfirmBody: document.getElementById('memberConfirmBody'),
+  memberConfirmBtn: document.getElementById('memberConfirmBtn'),
+
+  memberDeleteModal: document.getElementById('memberDeleteModal'),
+  memberDeleteBody: document.getElementById('memberDeleteBody'),
+  memberDeleteConfirmBtn: document.getElementById('memberDeleteConfirmBtn'),
+
+  deleteBookMeta: document.getElementById('deleteBookMeta'),
+
+  borrowDeleteModal: document.getElementById('borrowDeleteModal'),
+  borrowDeleteBody: document.getElementById('borrowDeleteBody'),
+  borrowConfirmBtn: document.getElementById('borrowConfirmBtn'),
 
   returnConfirmModal: document.getElementById('returnConfirmModal'),
   returnConfirmBookTitle: document.getElementById('returnConfirmBookTitle'),
@@ -253,9 +274,16 @@ function borrowingRow(borrowing) {
       <td>${formatDate(borrowing.dueDate)}${overdueBadge}</td>
       <td>${borrowing.returnDate ? formatDate(borrowing.returnDate) : '—'}</td>
       <td><span class="borrow-status ${statusClass}">${statusLabel}</span></td>
-      <td>${borrowing.status === 'ACTIVE' || borrowing.status === 'OVERDUE'
-        ? `<button type="button" class="btn btn-sm btn-danger" data-return="${borrowing.id}">Return</button>`
-        : ''}</td>
+      <td class="borrow-actions">
+        ${borrowing.status === 'ACTIVE' || borrowing.status === 'OVERDUE'
+          ? `<button type="button" class="btn btn-sm btn-danger" data-return="${borrowing.id}">Return</button>`
+          : ''}
+        <button type="button" class="icon-btn icon-btn--delete" title="Delete" data-borrow-delete="${borrowing.id}" aria-label="Delete borrowing #${borrowing.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          </svg>
+        </button>
+      </td>
     </tr>`;
 }
 
@@ -292,7 +320,7 @@ function renderMembers() {
   if (list.length === 0 && state.members.length > 0) {
     els.membersBody.innerHTML = `
       <tr>
-        <td colspan="7">
+        <td colspan="8">
           <div class="state-panel state-panel--center">
             <h3>No matches for &ldquo;${escapeHtml(state.memberQuery)}&rdquo;</h3>
             <p class="state-note">Try a different search.</p>
@@ -314,9 +342,16 @@ function renderMembers() {
 }
 
 function memberRow(m) {
-  const isActive = (m.currentBorrowings || 0) > 0;
-  const statusClass = isActive ? 'status-active' : 'status-returned';
-  const statusLabel = isActive ? 'Active' : 'Inactive';
+  const active = (m.active !== false);
+  let statusClass = 'status-returned';
+  let statusLabel = 'Inactive';
+  if (!active) {
+    statusClass = 'status-deactivated';
+    statusLabel = 'Deactivated';
+  } else if ((m.currentBorrowings || 0) > 0) {
+    statusClass = 'status-active';
+    statusLabel = 'Active';
+  }
 
   return `
     <tr>
@@ -327,6 +362,14 @@ function memberRow(m) {
       <td>${m.currentBorrowings || 0}</td>
       <td>${m.totalBorrowings || 0}</td>
       <td><span class="borrow-status ${statusClass}">${statusLabel}</span></td>
+      <td class="member-actions">
+        <button type="button" class="btn btn-ghost btn-sm" data-member-action="view" data-id="${m.id}">Details</button>
+        <button type="button" class="btn btn-ghost btn-sm ${active ? 'btn-danger-ghost' : 'btn-success-ghost'}" data-member-action="toggle" data-id="${m.id}">${active ? 'Deactivate' : 'Activate'}</button>
+        <button type="button" class="btn btn-danger btn-sm" data-member-action="delete" data-id="${m.id}" title="Permanently delete member" aria-label="Delete ${escapeHtml(m.name)}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px;height:14px;"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Delete
+        </button>
+      </td>
     </tr>`;
 }
 
@@ -526,9 +569,22 @@ async function handleBookSubmit(event) {
 /* --------------------------------------------------------------------------
     Delete flow
     -------------------------------------------------------------------------- */
+function requestErrorMessage(err) {
+  if (err && err.status === 401) return 'Your session has expired. Please log in again.';
+  if (err && (err.status === 0 || err.message === 'network')) return 'Unable to reach the server.';
+  if (err && err.message) return err.message;
+  return 'Something went wrong. Please try again.';
+}
+
 function openDeleteConfirm(book) {
   state.pendingDeleteId = book.id;
-  els.deleteMessage.textContent = `"${book.title}" will be permanently removed from the library.`;
+  els.deleteBookMeta.innerHTML = `
+    <p class="delete-book-title">${escapeHtml(book.title)}</p>
+    <p class="delete-book-sub">${escapeHtml(book.author || 'Unknown author')} &middot; ${escapeHtml(book.category || 'Uncategorized')}</p>
+    <p class="delete-book-sub">${book.quantity} copies available</p>`;
+  els.deleteMessage.textContent = 'This action cannot be undone.';
+  els.confirmDeleteBtn.disabled = false;
+  els.confirmDeleteBtn.textContent = 'Delete book';
   openModal(els.deleteModal);
 }
 
@@ -542,16 +598,202 @@ async function handleDeleteConfirm() {
   try {
     await authRequest(`/books/${id}`, { method: 'DELETE' });
     closeModal(els.deleteModal);
-    toast('Book removed', 'The book was deleted from the library.', 'success');
+    toast('Book deleted', 'Book deleted successfully.', 'success');
     await reloadBooks();
   } catch (err) {
-    toast('Delete failed', err.message === 'network'
-      ? "Can't reach the server. Make sure the backend is running."
-      : err.message, 'error');
-  } finally {
-    state.pendingDeleteId = null;
+    els.deleteMessage.textContent = requestErrorMessage(err);
     els.confirmDeleteBtn.disabled = false;
     els.confirmDeleteBtn.textContent = 'Delete book';
+  } finally {
+    if (!els.deleteModal.hidden) {
+      state.pendingDeleteId = null;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+    Borrowing delete flow
+    -------------------------------------------------------------------------- */
+function openBorrowDeleteConfirm(id) {
+  const borrowing = state.borrowings.find((b) => b.id === id);
+  if (!borrowing) return;
+  state.pendingDeleteBorrowingId = id;
+
+  const isActive = borrowing.status === 'ACTIVE' || borrowing.status === 'OVERDUE';
+  els.borrowDeleteBody.innerHTML = `
+    <p><strong>Borrowing #${borrowing.id}</strong></p>
+    <p class="delete-book-sub">Member: ${escapeHtml(borrowing.userName || borrowing.userEmail || '—')}</p>
+    <p class="delete-book-sub">Book: ${escapeHtml(borrowing.bookTitle)}</p>
+    <p class="delete-book-sub">Status: ${getBorrowingStatus(borrowing)}</p>
+    ${isActive
+      ? '<p class="state-note state-warning">Deleting an active borrowing will restore one available copy of this book.</p>'
+      : '<p class="state-note">Are you sure you want to permanently delete this borrowing record?</p>'}`;
+  els.borrowConfirmBtn.disabled = false;
+  els.borrowConfirmBtn.textContent = 'Delete Borrowing';
+  openModal(els.borrowDeleteModal);
+}
+
+async function confirmBorrowDelete() {
+  const id = state.pendingDeleteBorrowingId;
+  if (id === null) return;
+
+  const borrowing = state.borrowings.find((b) => b.id === id);
+  const isActive = borrowing && (borrowing.status === 'ACTIVE' || borrowing.status === 'OVERDUE');
+
+  els.borrowConfirmBtn.disabled = true;
+  els.borrowConfirmBtn.textContent = 'Deleting\u2026';
+
+  try {
+    await authRequest(`/borrowings/${id}`, { method: 'DELETE' });
+    closeModal(els.borrowDeleteModal);
+    toast('Borrowing deleted',
+      isActive ? 'Borrowing deleted and book copy restored.' : 'Borrowing record deleted successfully.',
+      'success');
+    await Promise.all([loadBorrowings(), reloadBooks(), loadMembers()]);
+  } catch (err) {
+    els.borrowDeleteBody.innerHTML = `<p class="state-error">${escapeHtml(requestErrorMessage(err))}</p>`;
+    els.borrowConfirmBtn.disabled = false;
+    els.borrowConfirmBtn.textContent = 'Delete Borrowing';
+  } finally {
+    if (!els.borrowDeleteModal.hidden) {
+      state.pendingDeleteBorrowingId = null;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+    Member details & deactivate/activate flow
+    -------------------------------------------------------------------------- */
+function openMemberDetails(m) {
+  state.pendingMember = m;
+  renderMemberModalBody(m);
+  const active = (m.active !== false);
+  els.memberToggleBtn.textContent = active ? 'Deactivate' : 'Activate';
+  els.memberToggleBtn.className = `btn ${active ? 'btn-danger' : 'btn-primary'}`;
+  els.memberToggleBtn.disabled = false;
+  openModal(els.memberModal);
+}
+
+function renderMemberModalBody(m) {
+  const active = (m.active !== false);
+  const current = m.currentBorrowings || 0;
+  const total = m.totalBorrowings || 0;
+  els.memberModalBody.innerHTML = `
+    <dl class="member-detail">
+      <dt>Member ID</dt><dd>#${m.id}</dd>
+      <dt>Name</dt><dd>${escapeHtml(m.name)}</dd>
+      <dt>Email</dt><dd>${escapeHtml(m.email)}</dd>
+      <dt>Role</dt><dd>${escapeHtml(m.role || '—')}</dd>
+      <dt>Status</dt><dd>${active ? 'Active' : 'Deactivated'}</dd>
+      <dt>Current Borrowings</dt><dd>${current}</dd>
+      <dt>Total Borrowings</dt><dd>${total}</dd>
+    </dl>
+    ${active ? '' : '<p class="state-note">This member is deactivated and cannot borrow books.</p>'}
+    ${current > 0 ? `<p class="state-note">${current} book${current === 1 ? '' : 's'} currently borrowed.</p>` : ''}`;
+}
+
+function openMemberConfirm(m, targetActive) {
+  state.pendingMember = m;
+  state.pendingMemberTargetActive = targetActive;
+  const verb = targetActive ? 'Activate' : 'Deactivate';
+  els.memberConfirmModal.querySelector('h2').textContent = `${verb} member?`;
+  els.memberConfirmBody.innerHTML = `
+    <p>Are you sure you want to ${verb.toLowerCase()} <strong>${escapeHtml(m.name)}</strong>?</p>
+    ${targetActive
+      ? '<p class="state-note">They will be able to borrow books again.</p>'
+      : '<p class="state-note">They will no longer be able to borrow books, but their borrowing history is preserved.</p>'}`;
+  els.memberConfirmBtn.textContent = `${verb} member`;
+  els.memberConfirmBtn.disabled = false;
+  openModal(els.memberConfirmModal);
+}
+
+async function handleMemberToggle() {
+  const m = state.pendingMember;
+  if (!m) return;
+  const targetActive = state.pendingMemberTargetActive;
+  const verb = targetActive ? 'Activate' : 'Deactivate';
+  els.memberConfirmBtn.disabled = true;
+  els.memberConfirmBtn.textContent = 'Working…';
+
+  try {
+    const result = await authRequest(`/users/${m.id}/${targetActive ? 'activate' : 'deactivate'}`, { method: 'PATCH' });
+    // Backend may return JSON UserResponseDTO or plain-text; handle both.
+    let updated;
+    let successMsg;
+    if (result && typeof result === 'object' && result.id) {
+      updated = result;
+      successMsg = `${updated.name} was ${targetActive ? 'activated' : 'deactivated'}.`;
+    } else if (typeof result === 'string' && result.trim()) {
+      updated = { ...m, active: targetActive };
+      successMsg = result.trim();
+    } else {
+      updated = result || { ...m, active: targetActive };
+      successMsg = `${m.name} was ${targetActive ? 'activated' : 'deactivated'}.`;
+    }
+    closeModal(els.memberConfirmModal);
+    state.pendingMember = updated;
+    toast(targetActive ? 'Member activated' : 'Member deactivated', successMsg, 'success');
+    await loadMembers();
+    const refreshed = state.members.find((x) => String(x.id) === String(m.id)) || updated;
+    if (!els.memberModal.hidden && refreshed) {
+      state.pendingMember = refreshed;
+      renderMemberModalBody(refreshed);
+      const isActive = refreshed.active !== false;
+      els.memberToggleBtn.textContent = isActive ? 'Deactivate' : 'Activate';
+      els.memberToggleBtn.className = `btn ${isActive ? 'btn-danger' : 'btn-primary'}`;
+    }
+  } catch (err) {
+    const msg = requestErrorMessage(err);
+    els.memberConfirmBody.innerHTML = `<p class="state-error">${escapeHtml(msg)}</p>`;
+    els.memberConfirmBtn.disabled = false;
+    els.memberConfirmBtn.textContent = `${verb} member`;
+  }
+}
+
+/* --------------------------------------------------------------------------
+    Member permanent delete flow
+    -------------------------------------------------------------------------- */
+function openMemberDeleteConfirm(m) {
+  state.pendingMemberDeleteId = m.id;
+  state.pendingMember = m;
+  els.memberDeleteBody.innerHTML = `
+    <p><strong>${escapeHtml(m.name)}</strong></p>
+    <p class="delete-book-sub">${escapeHtml(m.email)}</p>
+    <p class="delete-book-sub">${escapeHtml(m.role || 'CUSTOMER')}</p>
+    <p class="state-note">This permanently deletes this member account.</p>
+    <p class="state-note">If this member has borrowing history or active borrowings, deletion will be blocked.</p>`;
+  els.memberDeleteConfirmBtn.disabled = false;
+  els.memberDeleteConfirmBtn.textContent = 'Delete member';
+  openModal(els.memberDeleteModal);
+}
+
+async function confirmMemberDelete() {
+  const id = state.pendingMemberDeleteId;
+  if (id === null) return;
+  const m = state.members.find((x) => String(x.id) === String(id)) || state.pendingMember;
+  els.memberDeleteConfirmBtn.disabled = true;
+  els.memberDeleteConfirmBtn.textContent = 'Deleting\u2026';
+  try {
+    const result = await authRequest(`/users/${id}`, { method: 'DELETE' });
+    closeModal(els.memberDeleteModal);
+    const msg = typeof result === 'string' && result.trim() ? result.trim() : 'Member deleted successfully.';
+    toast('Member deleted', msg, 'success');
+    // Remove from local state immediately, then reload for consistency
+    state.members = state.members.filter((x) => String(x.id) !== String(id));
+    renderMembersStatistics();
+    renderMembers();
+    // Refresh from server to ensure counts consistent
+    await loadMembers();
+  } catch (err) {
+    els.memberDeleteBody.innerHTML = `<p class="state-error">${escapeHtml(requestErrorMessage(err))}</p>`;
+    els.memberDeleteConfirmBtn.disabled = false;
+    els.memberDeleteConfirmBtn.textContent = 'Delete member';
+  } finally {
+    if (!els.memberDeleteModal.hidden) {
+      // keep pending id so retry works; clear only on success / close
+    } else {
+      state.pendingMemberDeleteId = null;
+    }
   }
 }
 
@@ -627,7 +869,7 @@ function bookCard(book) {
             </svg>
           </button>
           <button type="button" class="card-btn card-btn--delete" data-action="delete" data-id="${book.id}"
-                  aria-label="Delete ${escapeHtml(book.title)}">
+                   title="Delete" aria-label="Delete ${escapeHtml(book.title)}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -851,6 +1093,27 @@ function wireEvents() {
   els.confirmDeleteBtn.addEventListener('click', handleDeleteConfirm);
   els.returnConfirmBtn.addEventListener('click', handleReturnConfirm);
 
+  els.membersBody.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-member-action]');
+    if (!btn) return;
+    event.stopPropagation();
+    const id = Number(btn.dataset.id);
+    const m = state.members.find((x) => x.id === id);
+    if (!m) return;
+    if (btn.dataset.memberAction === 'view') openMemberDetails(m);
+    if (btn.dataset.memberAction === 'toggle') openMemberConfirm(m, m.active === false);
+    if (btn.dataset.memberAction === 'delete') openMemberDeleteConfirm(m);
+  });
+
+  els.memberToggleBtn.addEventListener('click', () => {
+    const m = state.pendingMember;
+    if (!m) return;
+    openMemberConfirm(m, m.active === false);
+  });
+
+  els.memberConfirmBtn.addEventListener('click', handleMemberToggle);
+  if (els.memberDeleteConfirmBtn) els.memberDeleteConfirmBtn.addEventListener('click', confirmMemberDelete);
+
   els.grid.addEventListener('click', (event) => {
     const actionBtn = event.target.closest('[data-action]');
     if (actionBtn) {
@@ -893,7 +1156,15 @@ function wireEvents() {
       if (borrowing) openReturnConfirm(borrowing);
       return;
     }
+
+    const deleteBtn = event.target.closest('[data-borrow-delete]');
+    if (deleteBtn) {
+      event.stopPropagation();
+      openBorrowDeleteConfirm(Number(deleteBtn.dataset.borrowDelete));
+    }
   });
+
+  els.borrowConfirmBtn.addEventListener('click', confirmBorrowDelete);
 
   els.borrowingsBody.addEventListener('click', () => { /* prevent row click from triggering modal */ });
 }
@@ -909,6 +1180,7 @@ async function main() {
   wireSidebar();
   wireLogout();
   wireEvents();
+  initThemeToggle(document.getElementById('themeToggle'));
   await loadInitial();
 }
 

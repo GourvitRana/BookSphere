@@ -3,8 +3,10 @@ package librarymanagementsystem.service;
 import librarymanagementsystem.dto.BookRequestDTO;
 import librarymanagementsystem.dto.BookResponseDTO;
 import librarymanagementsystem.entity.Book;
+import librarymanagementsystem.exception.BookHasBorrowingsException;
 import librarymanagementsystem.exception.ResourceNotFoundException;
 import librarymanagementsystem.repository.BookRepository;
+import librarymanagementsystem.repository.BorrowingRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BorrowingRepository borrowingRepository;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, BorrowingRepository borrowingRepository) {
         this.bookRepository = bookRepository;
+        this.borrowingRepository = borrowingRepository;
     }
 
     // Add Book
@@ -78,6 +82,11 @@ public class BookService {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Book not found with ID : " + id));
+
+        if (borrowingRepository.existsByBookId(id)) {
+            throw new BookHasBorrowingsException(
+                    "This book has borrowing records and cannot be deleted to preserve library history.");
+        }
 
         bookRepository.delete(book);
     }

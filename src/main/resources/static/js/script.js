@@ -80,20 +80,36 @@ async function apiRequest(path, options = {}) {
     throw new Error('network');
   }
 
+  const contentType = response.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
+
   if (!response.ok) {
     let message = `Request failed with status ${response.status}`;
     try {
-      const data = await response.json();
-      message = extractErrorMessage(data, response.status, message);
-    } catch (_) {
-      /* fall back to the status-based message */
-    }
+      const raw = await response.text();
+      if (raw) {
+        if (isJson) {
+          try {
+            const data = JSON.parse(raw);
+            message = extractErrorMessage(data, response.status, raw.trim() || message);
+          } catch (_) {
+            if (raw.trim()) message = raw.trim();
+          }
+        } else if (raw.trim()) {
+          message = raw.trim();
+        }
+      }
+    } catch (_) { /* keep status-based message */ }
     throw new Error(message);
   }
 
   if (response.status === 204) return null;
   const text = await response.text();
-  return text ? JSON.parse(text) : null;
+  if (!text) return null;
+  if (isJson) {
+    try { return JSON.parse(text); } catch (_) { return text; }
+  }
+  return text;
 }
 
 const fetchBooks   = () => apiRequest('/books');

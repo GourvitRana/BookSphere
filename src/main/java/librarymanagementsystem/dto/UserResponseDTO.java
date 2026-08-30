@@ -17,4 +17,10 @@ public class UserResponseDTO {
     private String email;
 
     private Role role;
+
+    private Boolean active;
+
+    private Long currentBorrowings;
+
+    private Long totalBorrowings;
 }

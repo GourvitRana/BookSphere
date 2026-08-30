@@ -126,6 +126,7 @@ function wireRegister() {
    -------------------------------------------------------------------------- */
 async function main() {
   if (page === 'login' || page === 'register') {
+    initThemeToggle(document.getElementById('themeToggle'));
     const me = await getMe();
     if (me) {
       location.href = roleDashboard(me.role);

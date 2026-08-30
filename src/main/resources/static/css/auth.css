@@ -14,6 +14,13 @@
   padding: 32px 20px;
 }
 
+.auth-page .theme-toggle {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 30;
+}
+
 .auth-card {
   width: min(400px, 100%);
   padding: 36px 32px 30px;
@@ -61,8 +68,8 @@
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   color: var(--success);
-  background: rgba(111, 208, 162, 0.1);
-  border: 1px solid rgba(111, 208, 162, 0.28);
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
   margin-bottom: 18px;
 }
 
@@ -80,7 +87,7 @@
 }
 
 .auth-switch a {
-  color: var(--accent-strong);
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -119,14 +126,14 @@
 
 .role-badge--librarian {
   color: var(--accent-strong);
-  background: rgba(240, 182, 83, 0.14);
-  border: 1px solid rgba(240, 182, 83, 0.35);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
 }
 
 .role-badge--customer {
-  color: var(--teal);
-  background: rgba(111, 208, 194, 0.14);
-  border: 1px solid rgba(111, 208, 194, 0.35);
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-border);
 }
 
 /* --------------------------------------------------------------------------

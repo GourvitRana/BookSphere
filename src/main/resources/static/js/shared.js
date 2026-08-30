@@ -9,6 +9,21 @@
 /* --------------------------------------------------------------------------
    API helper
    -------------------------------------------------------------------------- */
+async function parseApiResponse(response) {
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    const text = await response.text();
+    if (!text) return null;
+    try {
+      const data = JSON.parse(text);
+      return data?.message ?? data;
+    } catch (_) {
+      return text;
+    }
+  }
+  return await response.text();
+}
+
 async function authRequest(path, options = {}) {
   let response;
   try {
@@ -18,20 +33,52 @@ async function authRequest(path, options = {}) {
       ...options,
     });
   } catch (err) {
-    throw new Error('network');
+    const error = new Error('network');
+    error.status = 0;
+    throw error;
   }
+
+  const contentType = response.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}`;
     try {
-      const data = await response.json();
-      if (data && typeof data.message === 'string' && data.message.length > 0) message = data.message;
-    } catch (_) { /* keep the status-based message */ }
-    throw new Error(message);
+      const raw = await response.text();
+      if (raw) {
+        if (isJson) {
+          try {
+            const data = JSON.parse(raw);
+            if (data && typeof data.message === 'string' && data.message.length > 0) {
+              message = data.message;
+            } else if (raw.trim().length > 0) {
+              message = raw.trim();
+            }
+          } catch (_) {
+            if (raw.trim().length > 0) message = raw.trim();
+          }
+        } else if (raw.trim().length > 0) {
+          message = raw.trim();
+        }
+      }
+    } catch (_) { /* keep status-based message */ }
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
+  // Success path: handle both JSON and plain-text without double-consuming body.
+  if (response.status === 204) return null;
   const text = await response.text();
-  return text ? JSON.parse(text) : null;
+  if (!text) return null;
+  if (isJson) {
+    try {
+      return JSON.parse(text);
+    } catch (_) {
+      return text;
+    }
+  }
+  return text;
 }
 
 /* --------------------------------------------------------------------------
@@ -48,6 +95,29 @@ async function getMe() {
 
 function roleDashboard(role) {
   return role === 'LIBRARIAN' ? 'librarian-dashboard.html' : 'customer-dashboard.html';
+}
+
+/* --------------------------------------------------------------------------
+    Theme toggle
+    -------------------------------------------------------------------------- */
+function getTheme() {
+  return document.documentElement.getAttribute('data-theme') || 'dark';
+}
+
+function setTheme(theme) {
+  try { localStorage.setItem('booksphere-theme', theme); } catch (_) {}
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function toggleTheme() {
+  setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+}
+
+function initThemeToggle(btn) {
+  if (!btn) return;
+  btn.addEventListener('click', toggleTheme);
+  const updateIcon = () => { btn.setAttribute('aria-label', getTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'); };
+  updateIcon();
 }
 
 /* --------------------------------------------------------------------------
